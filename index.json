@@ -1,0 +1,124 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-07-19T17:03:48Z",
+  "plugins": [
+    {
+      "id": "cxp-pdf-reader",
+      "name": "CxPlugin PDF 智能阅读器",
+      "version": "1.0.0",
+      "description": "PDF/Word/TXT 文档阅读与 AI 总结/翻译/问答插件",
+      "author": {
+        "name": "LuminousCX",
+        "url": ""
+      },
+      "category": "tool",
+      "tags": [
+        "pdf",
+        "document",
+        "ai",
+        "reader",
+        "academic"
+      ],
+      "icon": "FileText",
+      "platform": "fullstack",
+      "license": "MIT",
+      "minAppVersion": "0.7.6",
+      "repo": "https://github.com/luminous-ChenXi/LuomiNest-cxp-pdf-reader",
+      "downloadUrl": "https://github.com/luminous-ChenXi/LuomiNest-cxp-pdf-reader/releases/latest/download/cxp-pdf-reader.zip",
+      "createdAt": "2026-07-19",
+      "updatedAt": "2026-07-19"
+    },
+    {
+      "id": "weather-query",
+      "name": "天气查询",
+      "version": "1.0.0",
+      "description": "注册天气查询工具，并监听聊天消息中的天气相关关键词，为 AI 提供实时天气数据支持",
+      "author": {
+        "name": "LuminousCX",
+        "url": ""
+      },
+      "category": "tool",
+      "tags": [
+        "weather",
+        "tool",
+        "lifestyle"
+      ],
+      "icon": "CloudSun",
+      "platform": "backend",
+      "license": "MIT",
+      "minAppVersion": "0.7.6",
+      "repo": "https://github.com/luminous-ChenXi/LuomiNest-cxp-weather-query",
+      "downloadUrl": "https://github.com/luminous-ChenXi/LuomiNest-cxp-weather-query/releases/latest/download/weather-query.zip",
+      "createdAt": "2026-07-19",
+      "updatedAt": "2026-07-19"
+    }
+  ],
+  "skills": [
+    {
+      "id": "cooking-assistant",
+      "name": "烹饪助手",
+      "version": "1.0.0",
+      "description": "菜谱推荐（根据冰箱食材）、步骤指导、营养分析，是全屋场景下厨房交互的核心技能。",
+      "author": {
+        "name": "LuminousCX",
+        "url": ""
+      },
+      "category": "lifestyle",
+      "tags": [
+        "community",
+        "free"
+      ],
+      "icon": "ChefHat",
+      "license": "MIT",
+      "repo": "https://github.com/luminous-ChenXi/LuomiNest-cxp-skills",
+      "downloadUrl": "https://github.com/luminous-ChenXi/LuomiNest-cxp-skills/releases/latest/download/skill-cooking-assistant.zip",
+      "createdAt": "2026-07-19",
+      "updatedAt": "2026-07-19"
+    },
+    {
+      "id": "skill-creator",
+      "name": "技能创建助手",
+      "version": "1.0.0",
+      "description": "元技能，指导 AI 创建、修改、校验 LuomiNest SKILL.md 文件，使 AI 能根据用户需求自主扩展能力库",
+      "author": {
+        "name": "LuminousCX",
+        "url": ""
+      },
+      "category": "productivity",
+      "tags": [
+        "skill",
+        "meta",
+        "creation",
+        "authoring"
+      ],
+      "icon": "Sparkles",
+      "license": "MIT",
+      "repo": "https://github.com/luminous-ChenXi/LuomiNest-cxp-skills",
+      "downloadUrl": "https://github.com/luminous-ChenXi/LuomiNest-cxp-skills/releases/latest/download/skill-skill-creator.zip",
+      "createdAt": "2026-07-19",
+      "updatedAt": "2026-07-19"
+    },
+    {
+      "id": "travel-planner",
+      "name": "旅行规划",
+      "version": "1.0.0",
+      "description": "根据用户需求规划旅行行程，提供景点推荐、路线安排、交通住宿建议",
+      "author": {
+        "name": "LuminousCX",
+        "url": ""
+      },
+      "category": "lifestyle",
+      "tags": [
+        "travel",
+        "planning",
+        "lifestyle"
+      ],
+      "icon": "Map",
+      "license": "MIT",
+      "repo": "https://github.com/luminous-ChenXi/LuomiNest-cxp-skills",
+      "downloadUrl": "https://github.com/luminous-ChenXi/LuomiNest-cxp-skills/releases/latest/download/skill-travel-planner.zip",
+      "createdAt": "2026-07-19",
+      "updatedAt": "2026-07-19"
+    }
+  ]
+}
