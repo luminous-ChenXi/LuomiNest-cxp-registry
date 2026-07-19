@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updatedAt": "2026-07-19T17:03:48Z",
+  "updatedAt": "2026-07-20T00:00:00Z",
   "plugins": [
     {
       "id": "cxp-pdf-reader",
@@ -9,7 +9,7 @@
       "description": "PDF/Word/TXT 文档阅读与 AI 总结/翻译/问答插件",
       "author": {
         "name": "LuminousCX",
-        "url": ""
+        "url": "https://github.com/luminous-ChenXi"
       },
       "category": "tool",
       "tags": [
@@ -23,10 +23,11 @@
       "platform": "fullstack",
       "license": "MIT",
       "minAppVersion": "0.7.6",
-      "repo": "https://github.com/luminous-ChenXi/LuomiNest-cxp-pdf-reader",
-      "downloadUrl": "https://github.com/luminous-ChenXi/LuomiNest-cxp-pdf-reader/releases/latest/download/cxp-pdf-reader.zip",
+      "repo": "https://github.com/luminous-ChenXi/LuomiNest-cxp-PDF_reader",
+      "downloadUrl": "https://github.com/luminous-ChenXi/LuomiNest-cxp-PDF_reader/releases/latest/download/cxp-pdf-reader.zip",
+      "homepage": "https://github.com/luminous-ChenXi/LuomiNest-cxp-PDF_reader",
       "createdAt": "2026-07-19",
-      "updatedAt": "2026-07-19"
+      "updatedAt": "2026-07-20"
     },
     {
       "id": "weather-query",
@@ -35,7 +36,7 @@
       "description": "注册天气查询工具，并监听聊天消息中的天气相关关键词，为 AI 提供实时天气数据支持",
       "author": {
         "name": "LuminousCX",
-        "url": ""
+        "url": "https://github.com/luminous-ChenXi"
       },
       "category": "tool",
       "tags": [
@@ -61,7 +62,7 @@
       "description": "菜谱推荐（根据冰箱食材）、步骤指导、营养分析，是全屋场景下厨房交互的核心技能。",
       "author": {
         "name": "LuminousCX",
-        "url": ""
+        "url": "https://github.com/luminous-ChenXi"
       },
       "category": "lifestyle",
       "tags": [
@@ -82,7 +83,7 @@
       "description": "元技能，指导 AI 创建、修改、校验 LuomiNest SKILL.md 文件，使 AI 能根据用户需求自主扩展能力库",
       "author": {
         "name": "LuminousCX",
-        "url": ""
+        "url": "https://github.com/luminous-ChenXi"
       },
       "category": "productivity",
       "tags": [
@@ -105,7 +106,7 @@
       "description": "根据用户需求规划旅行行程，提供景点推荐、路线安排、交通住宿建议",
       "author": {
         "name": "LuminousCX",
-        "url": ""
+        "url": "https://github.com/luminous-ChenXi"
       },
       "category": "lifestyle",
       "tags": [

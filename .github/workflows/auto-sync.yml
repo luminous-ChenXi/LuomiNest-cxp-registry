@@ -1,0 +1,90 @@
+name: Auto-sync from LuomiNest
+
+# 当 LuomiNest 主项目推送 publish-local 事件时，会触发本 workflow
+# 通过 repository_dispatch 把本地采集的 index.json 推送到本仓库
+# 这样开发者只需在主项目调用 publish-local API，无需手动操作本仓库
+
+on:
+  repository_dispatch:
+    types: [sync-registry]
+  workflow_dispatch:
+    inputs:
+      index_json:
+        description: '完整的 index.json 内容（JSON 字符串）'
+        required: true
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Update index.json
+        run: |
+          # 从 dispatch payload 获取 index.json 内容
+          if [ -n "${{ inputs.index_json }}" ]; then
+            echo '${{ inputs.index_json }}' > index.json
+          elif [ -n "${{ github.event.client_payload.index_json }}" ]; then
+            echo '${{ github.event.client_payload.index_json }}' > index.json
+          else
+            echo "ERROR: No index_json provided"
+            exit 1
+          fi
+
+          # 校验 JSON 格式
+          python -c "import json; json.load(open('index.json'))"
+          echo "index.json updated and validated"
+
+      - name: Validate index.json structure
+        run: |
+          python - <<'EOF'
+          import json
+          import sys
+
+          with open('index.json', encoding='utf-8') as f:
+              data = json.load(f)
+
+          required_top = ['version', 'updatedAt', 'plugins', 'skills']
+          for k in required_top:
+              if k not in data:
+                  print(f"ERROR: missing top-level field: {k}")
+                  sys.exit(1)
+
+          plugins = data['plugins']
+          skills = data['skills']
+
+          for i, p in enumerate(plugins):
+              for f in ['id', 'name', 'version', 'repo', 'downloadUrl']:
+                  if f not in p:
+                      print(f"ERROR: plugins[{i}] missing '{f}'")
+                      sys.exit(1)
+
+          for i, s in enumerate(skills):
+              for f in ['id', 'name', 'version', 'repo', 'downloadUrl']:
+                  if f not in s:
+                      print(f"ERROR: skills[{i}] missing '{f}'")
+                      sys.exit(1)
+
+          print(f"OK: {len(plugins)} plugins + {len(skills)} skills")
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add index.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: auto-sync index.json from LuomiNest"
+            git push
+            echo "Pushed to origin/main"
+          fi

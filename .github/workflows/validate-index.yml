@@ -1,0 +1,168 @@
+name: Validate Index
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.json'
+      - '.github/workflows/validate-index.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.json'
+      - '.github/workflows/validate-index.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate index.json structure
+        run: |
+          python - <<'EOF'
+          import json
+          import sys
+          import re
+          from urllib.parse import urlparse
+
+          with open('index.json', encoding='utf-8') as f:
+              data = json.load(f)
+
+          errors = []
+
+          # 顶层字段校验
+          if 'version' not in data:
+              errors.append("Missing top-level field: version")
+          if 'updatedAt' not in data:
+              errors.append("Missing top-level field: updatedAt")
+          if 'plugins' not in data:
+              errors.append("Missing top-level field: plugins")
+          if 'skills' not in data:
+              errors.append("Missing top-level field: skills")
+
+          plugins = data.get('plugins', [])
+          skills = data.get('skills', [])
+
+          if not isinstance(plugins, list):
+              errors.append("Field 'plugins' must be a list")
+              plugins = []
+          if not isinstance(skills, list):
+              errors.append("Field 'skills' must be a list")
+              skills = []
+
+          # 插件必填字段
+          PLUGIN_REQUIRED = ['id', 'name', 'version', 'description', 'author',
+                              'category', 'license', 'minAppVersion', 'repo',
+                              'downloadUrl', 'platform']
+          # 技能必填字段（platform 选填）
+          SKILL_REQUIRED = ['id', 'name', 'version', 'description', 'author',
+                            'category', 'license', 'repo', 'downloadUrl']
+
+          seen_plugin_ids = set()
+          seen_skill_ids = set()
+
+          ID_PATTERN = re.compile(r'^cxp-[a-z0-9]+(?:-[a-z0-9]+)*$')
+          VERSION_PATTERN = re.compile(r'^\d+\.\d+\.\d+(?:[-+].*)?$')
+
+          def check_url(url, ctx):
+              if not url:
+                  errors.append(f"{ctx}: empty URL")
+                  return
+              try:
+                  parsed = urlparse(url)
+                  if parsed.scheme not in ('http', 'https'):
+                      errors.append(f"{ctx}: URL must be http/https, got {parsed.scheme}")
+                  if not parsed.netloc:
+                      errors.append(f"{ctx}: URL missing netloc")
+              except Exception as e:
+                  errors.append(f"{ctx}: invalid URL ({e})")
+
+          # 校验所有插件
+          for i, p in enumerate(plugins):
+              ctx = f"plugins[{i}]"
+              if not isinstance(p, dict):
+                  errors.append(f"{ctx}: must be an object")
+                  continue
+              pid = p.get('id', '<unknown>')
+              ctx = f"plugins[{i}] ({pid})"
+
+              for field in PLUGIN_REQUIRED:
+                  if field not in p:
+                      errors.append(f"{ctx}: missing required field '{field}'")
+
+              if 'id' in p:
+                  if not ID_PATTERN.match(p['id']):
+                      errors.append(f"{ctx}: id '{p['id']}' does not match pattern cxp-kebab-case")
+                  if p['id'] in seen_plugin_ids:
+                      errors.append(f"{ctx}: duplicate id '{p['id']}'")
+                  seen_plugin_ids.add(p['id'])
+
+              if 'version' in p and not VERSION_PATTERN.match(str(p['version'])):
+                  errors.append(f"{ctx}: version '{p['version']}' is not semver")
+
+              if 'platform' in p and p['platform'] not in ('backend', 'frontend', 'fullstack', 'hardware'):
+                  errors.append(f"{ctx}: invalid platform '{p['platform']}'")
+
+              check_url(p.get('repo', ''), f"{ctx}.repo")
+              check_url(p.get('downloadUrl', ''), f"{ctx}.downloadUrl")
+
+              if 'author' in p:
+                  author = p['author']
+                  if not isinstance(author, dict) or 'name' not in author:
+                      errors.append(f"{ctx}.author: must be object with 'name' field")
+
+          # 校验所有技能
+          for i, s in enumerate(skills):
+              ctx = f"skills[{i}]"
+              if not isinstance(s, dict):
+                  errors.append(f"{ctx}: must be an object")
+                  continue
+              sid = s.get('id', '<unknown>')
+              ctx = f"skills[{i}] ({sid})"
+
+              for field in SKILL_REQUIRED:
+                  if field not in s:
+                      errors.append(f"{ctx}: missing required field '{field}'")
+
+              if 'id' in s:
+                  # 技能 id 不强制 cxp- 前缀，但必须是 kebab-case
+                  if not re.match(r'^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$', s['id']):
+                      errors.append(f"{ctx}: id '{s['id']}' is not kebab-case")
+                  if s['id'] in seen_skill_ids:
+                      errors.append(f"{ctx}: duplicate id '{s['id']}'")
+                  seen_skill_ids.add(s['id'])
+
+              if 'version' in s and not VERSION_PATTERN.match(str(s['version'])):
+                  errors.append(f"{ctx}: version '{s['version']}' is not semver")
+
+              check_url(s.get('repo', ''), f"{ctx}.repo")
+              check_url(s.get('downloadUrl', ''), f"{ctx}.downloadUrl")
+
+              if 'author' in s:
+                  author = s['author']
+                  if not isinstance(author, dict) or 'name' not in author:
+                      errors.append(f"{ctx}.author: must be object with 'name' field")
+
+          # 跨表校验：插件 id 和技能 id 不应冲突
+          common = seen_plugin_ids & seen_skill_ids
+          if common:
+              errors.append(f"IDs appear in both plugins and skills: {common}")
+
+          if errors:
+              print("❌ index.json validation FAILED:")
+              for e in errors:
+                  print(f"  - {e}")
+              sys.exit(1)
+          else:
+              print(f"✅ index.json validation PASSED")
+              print(f"   - {len(plugins)} plugin(s)")
+              print(f"   - {len(skills)} skill(s)")
+              print(f"   - Plugin IDs: {sorted(seen_plugin_ids)}")
+              print(f"   - Skill IDs: {sorted(seen_skill_ids)}")
+          EOF
